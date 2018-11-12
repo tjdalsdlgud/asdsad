@@ -3,3 +3,5 @@
 #include conio.h -> #include <curses.h>
 
 window -> linux
+
+linux사용시 khbit사용할때 헤더파일 따로 생성
