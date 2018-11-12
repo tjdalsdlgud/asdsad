@@ -1,0 +1,5 @@
+#include windows.h ->  #include <unistd.h>
+
+#include conio.h -> #include <curses.h>
+
+window -> linux
