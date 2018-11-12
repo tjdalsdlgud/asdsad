@@ -1,0 +1,1038 @@
+
+Updated 5 days ago
+
+#include <stdio.h>//입출력 함수
+
+#include <stdlib.h>//랜덤함수
+
+#include <Windows.h>//gotoxy 함수, getch함수
+
+#include <time.h>//커서 없애주는 함수
+
+#define WIDTH 35 //가로는 35이다.
+
+#define HEIGHT 20 // 높이는 20이다.
+
+void setcursortype();//커서 없애주는 함수
+
+void gotoxy(int x, int y);//좌표 설정해주는 함수
+
+void Create();//F학점 생성함
+
+void Move();//F학점이 떨어지는 함수
+
+void Delete();//F학점이 없어지는 함수
+
+int PlayerContains();//종료되는 조건 함수
+
+void MovePlayer();//player를 움직이는 함수
+
+void Map();//map를 만드는 함수
+
+void First_screen1();//첫번째 화면
+
+void Frst_screen2();//두번째 화면
+
+void Game();//game실행 함수
+
+void Gamemethod();//게임방법
+
+void Helper();//도와준 사람들
+
+void GameoverF();//F학점
+
+void GameoverD();//D학점
+
+void GameoverC();//C학점
+
+void GameoverB();//B학점
+
+void GameoverA();//A학점
+
+void SetColor();//색깔 함수
+
+int x[WIDTH];//가로축
+
+int y[WIDTH];//세로축
+
+int play[WIDTH];//반복문을 실행시키기 or 중지
+
+clock_t start, end;
+
+int player;//player는 이 변수 사용
+
+void SetColor(unsigned short text, unsigned short back)//색깔 함수
+
+{
+
+SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text | (back << 4));
+
+}
+
+void setcursortype()//커서를 없애주는 함수선언
+
+{
+
+CONSOLE_CURSOR_INFO CurInfo;
+
+CurInfo.dwSize = 1;
+
+CurInfo.bVisible = FALSE;
+
+SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
+
+}
+
+void gotoxy(int x, int y)//좌표 설정을 위한선언
+
+{
+
+COORD pos = { 2 * x, y };
+
+SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+
+}
+
+int Keybored(int key)//키보드를 사용하는 함수 선언
+
+{
+
+return ((GetAsyncKeyState(key) & 0x8000) != 0);
+
+}
+
+void Create()//F를 생성하는 함수
+
+{
+
+int i;
+
+for (i = 0; i < WIDTH; i++)//35번 반복
+
+{
+
+if (play[i] == 0)//배열play=0일때 실행
+
+{
+
+x[i] = rand() % WIDTH;//x[i]를 35중 하나로 랜덤하게 나오게한다.
+
+y[i] = HEIGHT - 1;//y[i]는 20-1로 설정
+
+play[i] = 1;//plat[i]의 값을 1로 바꾼다
+
+return 0;
+
+}
+
+}
+
+}
+
+void Move()//똥이 아래로 떨어지는 함수
+
+{
+
+int i;
+
+for (i = 0; i < WIDTH; i++)//35번 반복
+
+{
+
+if (play[i] == 1)//배열play=1일때 실행
+
+{
+
+y[i]--;//배열 y[i]를 1씩 뺀다.
+
+}
+
+}
+
+}
+
+void Delete()//똥이 HEiGHT이상 떨어지면 삭제해주는 함수
+
+{
+
+int i;
+
+for (i = 0; i < HEIGHT; i++)//20번 반복
+
+{
+
+if (play[i] == 1 && y[i] < 0)//배열play=1이고 y[i]가 0보다 작으면때
+
+{
+
+play[i] = 0;//play[i]==0이다.
+
+}
+
+}
+
+}
+
+int PlayerContains()//종료 할 조건 함수
+
+{
+
+int i;
+
+for (i = 0; i < WIDTH; i++)//35번 반복
+
+{
+
+if ((play[i] == 1) && (y[i] == 0) && (x[i] == player))//play[i] == 1 이고 y[i] == 0 이고 x[i] == player이면 종료
+
+{
+
+return 1;//1로 반환 한다.
+
+}
+
+}
+
+return 0;//0으로 반환한다.
+
+}
+
+void MovePlayer()//키보드 사용하는 함수
+
+{
+
+if (Keybored(VK_LEFT))//키보드 '←'키
+
+{
+
+player = player - 1;//player는 왼쪽으로 이동
+
+}
+
+if (Keybored(VK_RIGHT))//키보드 '→'키
+
+{
+
+player = player + 1;//player는 오른쪽으로 이동
+
+}
+
+if (player < 0)//player가 0보다 작을시
+
+{
+
+player = 0;//player값 변화없음
+
+}
+
+if (player > WIDTH - 1)//player가 34보다 크면
+
+{
+
+player = WIDTH - 1;//player값 변화없음
+
+}
+
+}
+
+void Map()//맵만드는 함수
+
+{
+
+system("cls");//화면 지워준다
+
+int i;//변수 i 선언
+
+for (i = 0; i < WIDTH; i++)//35번 반복
+
+{
+
+if (play[i] == 1)//배열 play[i]==1일때 실행
+
+{
+
+SetColor(14, 0);//글자 연한 노랑색으로 바꿈
+
+gotoxy(x[i], HEIGHT - y[i]);//가로는 x[i]이고, 세로는 HEIGHT-y[i]
+
+printf("F");//F를 생성
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+}
+
+}
+
+SetColor(12, 0);//글자 연한 빨강색으로바꿈
+
+gotoxy(player, HEIGHT);//가로는 player이고, 세로는 HEIGHT
+
+printf("□");//□를 생성
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+SetColor(11, 0);//글자 연한 청색으로 바꿈
+
+gotoxy(0, HEIGHT + 1);//가로는 0이고, 세로는 HEIGHT+1
+
+for (i = 0; i < WIDTH; i++)//35번 반복
+
+printf("▤");//▤생성
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+}
+
+void Game()//게임 함수
+
+{
+
+do//한번 실행
+
+{
+
+srand((int)malloc(NULL));//srand를 동적할당 같은값x
+
+Create();//똥만드는 함수
+
+Move();//똥 움직이는 함수
+
+Delete();//똥 없애주는 함수
+
+MovePlayer();//player가 움직이는 함수
+
+Map();//맵
+
+Sleep(50);//천천히 실행시켜준다.
+
+} while (!(PlayerContains()));//platercontain함수가 틀리면 실행 맞으면 종료
+
+system("cls");//화면을 지워준다.
+
+}
+
+void Gamemethod()//게임 방법 함수
+
+{
+
+SetColor(10, 0);//글자 연한 초록색으로 바꿈
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ * 게임 방법 * ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ '←' 와 '→' 키를 사용하여 ★\n");
+
+printf("★ 위에서 날아오는 F학점을 피하세요. ☆\n");
+
+printf("☆ 노력해서 좋은 성적을 얻으세요! ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ '나가시려면 SPACE 바를 누르세요.' ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ made by 범철 ★\n");
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+}
+
+void Helper()//도와준 사람 함수
+
+{
+
+SetColor(10, 0);//글자 연한 초록색으로 바꿈
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ * 도움주신분들 * ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ♡ 용호센세 ♡ ★\n");
+
+printf("★ ♡ 최은비조교님 ♡ ☆\n");
+
+printf("☆ ♡ 남궁찬형 ♡ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ '나가시려면 SPACE 바를 누르세요.' ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ made by 범철 ★\n");
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+}
+
+void GameoverF()//학점F
+
+{
+
+SetColor(14, 0);//글자 연한 노랑색으로 바꿈
+
+gotoxy(0, 0);
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 당신의 학점이 사망하셨습니다. ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ■■■■■■■■■■■■ ☆\n");
+
+printf("☆ ■ ■ ★\n");
+
+printf("★ ■ ■■■■■■■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■■■■■■■ ■ ★\n");
+
+printf("★ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ☆\n");
+
+printf("☆ ■■■■■■■■■■■■ ★\n");
+
+printf("★ made by 범철 ☆\n");
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+gotoxy(4, 7);//가로 4, 세로 7로 이동
+
+printf("Score\n");//점수 출력
+
+gotoxy(4, 8);//가로 4, 세로 8로 이동
+
+printf(" %d초", (end - start) / 1000);//시간 출력
+
+gotoxy(0, 21);//가로 0, 세로 21로 이동
+
+}
+
+void GameoverD()//학점 D
+
+{
+
+SetColor(14, 0);//글자 연한 노랑색으로 바꿈
+
+gotoxy(0, 0);
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 당신의 학점이 사망하셨습니다. ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ■■■■■■■■■■■■ ☆\n");
+
+printf("☆ ■ ■ ★\n");
+
+printf("★ ■ ■■■■■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■■■■■ ■ ★\n");
+
+printf("★ ■ ■ ☆\n");
+
+printf("☆ ■■■■■■■■■■■■ ★\n");
+
+printf("★ made by 범철 ☆\n");
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+gotoxy(4, 7);//가로 4, 세로 7로 이동
+
+printf("Score\n");//점수 출력
+
+gotoxy(4, 8);//가로 4, 세로 8로 이동
+
+printf(" %d초", (end - start) / 1000);//시간 출력
+
+gotoxy(0, 21);//가로 0, 세로 21로 이동
+
+}
+
+void GameoverC()//학점 C
+
+{
+
+SetColor(14, 0);//글자 연한 노랑색으로 바꿈
+
+gotoxy(0, 0);
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 다음엔 좀더 노력해보세요~~ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ■■■■■■■■■■■■ ☆\n");
+
+printf("☆ ■ ■ ★\n");
+
+printf("★ ■ ■■■■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■■■■ ■ ★\n");
+
+printf("★ ■ ■ ☆\n");
+
+printf("☆ ■■■■■■■■■■■■ ★\n");
+
+printf("★ made by 범철 ☆\n");
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+gotoxy(4, 7);//가로 4, 세로 7로 이동
+
+printf("Score\n");//점수 출력
+
+gotoxy(4, 8);//가로 4, 세로 8로 이동
+
+printf(" %d초", (end - start) / 1000);//시간 출력
+
+gotoxy(0, 21);//가로 0, 세로 21로 이동
+
+}
+
+void GameoverB()//학점 B
+
+{
+
+SetColor(14, 0);//글자 연한 노랑색으로 바꿈
+
+gotoxy(0, 0);
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 어디서 좀 노셨군요~~?? ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ■■■■■■■■■■■■ ☆\n");
+
+printf("☆ ■ ■ ★\n");
+
+printf("★ ■ ■■■■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■■■■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■■■■■ ■ ★\n");
+
+printf("★ ■ ■ ☆\n");
+
+printf("☆ ■■■■■■■■■■■■ ★\n");
+
+printf("★ made by 범철 ☆\n");
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+gotoxy(4, 7);//가로 4, 세로 7로 이동
+
+printf("Score\n");//점수 출력
+
+gotoxy(4, 8);//가로 4, 세로 8로 이동
+
+printf(" %d초", (end - start) / 1000);//시간 출력
+
+gotoxy(0, 21);//가로 0, 세로 21로 이동
+
+}
+
+void GameoverA()//학점 A
+
+{
+
+SetColor(14, 0);//글자 연한 노랑색으로 바꿈
+
+gotoxy(0, 0);
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 공부좀 하시는군요~~!!! ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ■■■■■■■■■■■■ ☆\n");
+
+printf("☆ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■■■■■■ ■ ☆\n");
+
+printf("☆ ■ ■ ■ ■ ★\n");
+
+printf("★ ■ ■ ■ ■ ☆\n");
+
+printf("☆ ■ ■ ★\n");
+
+printf("★ ■ ■ ☆\n");
+
+printf("☆ ■■■■■■■■■■■■ ★\n");
+
+printf("★ made by 범철 ☆\n");
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+SetColor(7, 0);//글자 흰색으로 바꿈
+
+gotoxy(4, 7);//가로 4, 세로 7로 이동
+
+printf("Score\n");//점수 출력
+
+gotoxy(4, 8);//가로 4, 세로 8로 이동
+
+printf(" %d초", (end - start) / 1000);//시간 출력
+
+gotoxy(0, 21);//가로 0, 세로 21로 이동
+
+}
+
+void Frist_screen1()//초기화면 1
+
+{
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ●●●●●●● ● ● ● ☆\n");
+
+printf("☆ ● ● ●● ● ●●●●● ● ★\n");
+
+printf("★ ● ●●●●● ● ●●●●● ● ● ● ☆\n");
+
+printf("☆ ●●●●●●● ● ● ● ● ● ●●● ● ● ★\n");
+
+printf("★ ● ● ● ● ● ● ● ● ● ☆\n");
+
+printf("☆ ● ●●●●● ● ●● ● ● ● ★\n");
+
+printf("★ ● ● ● ● ● ☆\n");
+
+printf("☆ ● ● ● ● ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 1. 게임시작 ★\n");
+
+printf("★ 2. 게임방법 ☆\n");
+
+printf("☆ 3. 도와주신분들ㅎ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ◆ 숫자를 입력해줘 : ◆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ made by 범철 ★\n");
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+}
+
+void Frist_screen2()//초기화면 2
+
+{
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ●●●●●●● ● ● ● ★\n");
+
+printf("★ ● ● ●● ● ●●●●● ● ☆\n");
+
+printf("☆ ● ●●●●● ● ●●●●● ● ● ● ★\n");
+
+printf("★ ●●●●●●● ● ● ● ● ● ●●● ● ● ☆\n");
+
+printf("☆ ● ● ● ● ● ● ● ● ● ★\n");
+
+printf("★ ● ●●●●● ● ●● ● ● ● ☆\n");
+
+printf("☆ ● ● ● ● ● ★\n");
+
+printf("★ ● ● ● ● ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ 1. 게임시작 ☆\n");
+
+printf("☆ 2. 게임방법 ★\n");
+
+printf("★ 3. 도와주신분들ㅎ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ◆ 숫자를 입력해줘 : ◆ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ made by 범철 ☆\n");
+
+printf("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★\n");
+
+}
+
+void Start_game()//게임 시작 함수
+
+{
+
+char key;//키보드 변수
+
+int ch = 0;//getch변수
+
+int i;//입력값 변수
+
+while (1)//무한 반복
+
+{
+
+Frist_screen1();//초기화면 1 합수
+
+Sleep(100);//천천히 실행시켜준다.
+
+system("cls");//화면을 없애준다.
+
+Frist_screen2();
+
+system("cls");//화면을 없애준다.
+
+if (kbhit())//키보드 아무거나 누를시
+
+{
+
+break;//반복문 나간다.
+
+}
+
+}
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ●●●●●●● ● ● ● ☆\n");
+
+printf("☆ ● ● ●● ● ●●●●● ● ★\n");
+
+printf("★ ● ●●●●● ● ●●●●● ● ● ● ☆\n");
+
+printf("☆ ●●●●●●● ● ● ● ● ● ●●● ● ● ★\n");
+
+printf("★ ● ● ● ● ● ● ● ● ● ☆\n");
+
+printf("☆ ● ●●●●● ● ●● ● ● ● ★\n");
+
+printf("★ ● ● ● ● ● ☆\n");
+
+printf("☆ ● ● ● ● ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ 1. 게임시작 ★\n");
+
+printf("★ 2. 게임방법 ☆\n");
+
+printf("☆ 3. 도와주신분들ㅎ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ ◆ 숫자를 입력해줘 : ◆ ★\n");
+
+printf("★ ☆\n");
+
+printf("☆ made by 범철 ★\n");
+
+printf("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆\n");
+
+gotoxy(24, 17);//가로 24, 세로 17로 이동
+
+scanf_s("%d", &i);//i값을 입력받는다.
+
+  //fflush(stdin);//버그 없애주는 함수
+
+if (i == 1)//1을 누를경우
+
+{
+
+system("cls");//화면을 없애준다.
+
+start = clock();//시간초 시작
+
+Game();//게임 함수
+
+end = clock();//시간초 끝
+
+system("cls");//화면을 없애준다.
+
+gotoxy(5, 7);//가로 5, 세로 7로 이동
+
+printf("%d초입니다.", (end - start) / 1000);//시간초 출력
+
+if (((end - start) / 1000) < 10)//시간초가 10미만일때
+
+{
+
+gotoxy(0, 0);//가로 0, 세로 0으로 이동
+
+GameoverF();//학점F
+
+}
+
+if (((end - start) / 1000) < 30 && ((end - start) / 1000) >= 10)//시간초가 10이상 30미만인때
+
+{
+
+gotoxy(0, 0);//가로 0, 세로 0으로 이동
+
+GameoverD();//학점D
+
+}
+
+if (((end - start) / 1000) < 50 && ((end - start) / 1000) >= 30)//시간초가 30이상 50미만인때
+
+{
+
+gotoxy(0, 0);//가로 0, 세로 0으로 이동
+
+GameoverC();//학점C
+
+}
+
+if (((end - start) / 1000) < 70 && ((end - start) / 1000) >= 50)//시간초가 50이상 70미만인때
+
+{
+
+gotoxy(0, 0);//가로 0, 세로 0으로 이동
+
+GameoverB();//학점B
+
+}
+
+if (((end - start) / 1000) >= 70)//시간초가 70이상
+
+{
+
+gotoxy(0, 0);//가로 0, 세로 0으로 이동
+
+GameoverA();//학점A
+
+}
+
+}
+
+if (i == 2)//2를 눌렀을 경우
+
+{
+
+system("cls");//화면을 없애준다.
+
+Gamemethod();//게임 방법 함수
+
+ch = getch();//키보드를 입력한다.
+
+if (ch == 32)//스페이스를 누를경우
+
+{
+
+Start_game();//게임시작 함수
+
+}
+
+}
+
+if (i == 3)//3을 눌렀을 경우
+
+{
+
+system("cls");//화면를 없애준다.
+
+Helper();//도와준 사람 함수
+
+ch = getch();//키보드를 입력한다.
+
+if (ch == 32)//스페이스바를 눌럿을 때
+
+{
+
+Start_game();//게임 시작함수
+
+}
+
+}
+
+}
+
+void main()//main 함수
+
+{
+
+setcursortype();//커서 없애주는 함수
+
+Start_game();//게임 시작 함수
+
+}
+
+[출처] 심범철 c언어로 만든 똥피하기 게임 소스|작성자 최고민혁
