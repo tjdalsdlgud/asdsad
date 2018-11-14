@@ -1,0 +1,345 @@
+// 난이도, 떨어지는 속도 조정, 크레딧 추가
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include "linux_kbhit.h"
+#include <termios.h>
+#include<time.h>
+
+#define nemomax 20
+#define wally 24
+#define wallx 2
+#define wall2x 42
+#define wall3x 20
+// 난이도스코어
+#define lv2 2000
+#define lv3 4000
+#define lv4 7000
+
+int getch(void) {
+	int ch;
+	struct termios old;
+	struct termios new;
+	tcgetattr(0, &old); new = old;
+	new.c_lflag &= ~(ICANON|ECHO);
+	new.c_cc[VMIN] = 1;
+	new.c_cc[VTIME] = 0;
+	tcsetattr(0, TCSAFLUSH, &new);
+	ch = getchar();
+	tcsetattr(0, TCSAFLUSH, &old);
+	return ch;
+}
+
+void gotoxy(int x,int y) // 좌표이동함수
+{
+	printf("\033[%d;%df", y, x);
+	fflush(stdout);
+}
+void dos_size()
+{
+	system("mode con: cols=46 lines=25");
+}
+
+
+struct nemo1{ //네모 구조체
+	int x,y;
+	int speed;
+	int bkspeed;
+};
+
+typedef struct nemo1 nemo; //네모 이름 변경
+
+struct ningen1{ //내캐릭터 구조체
+	int x,y;
+};
+
+typedef struct ningen1 nins; //내캐릭터 이름 변경
+
+void nemo_spawnpos(nemo *ne){
+	ne->x= ((rand()%19)*2)+4;
+	ne->y= rand()%4;
+}
+
+void showmain()
+{// 메인메뉴
+	gotoxy(16,10);
+	printf("게임 시작 : 1번 \n");
+	gotoxy(18,12);
+	printf("정보 : 2번 \n");
+	gotoxy(17,14);
+	printf("나가기 : 3번 \n");
+	gotoxy(20,22);
+	printf("조작키 \n");
+	gotoxy(14,24);
+	printf("왼쪽 : ← , 오른쪽: → \n");
+}
+
+void showcredit() // 매인메뉴 - 2
+{
+	gotoxy(17,12);
+	printf("제작 : I조, 김훈민, 표동우, 한태 \n");
+	gotoxy(12,14);
+	printf("아무키 클릭시 게임메뉴로 \n");
+}
+
+void nemo_speed(nemo *ne,int le)
+{
+	ne->speed=rand()%(20-(le*3));
+}
+int main() //메인
+
+{
+	dos_size();
+	srand(time(NULL));
+	int i;
+	int loop;
+	int tx;
+	int credit;
+	int loa;
+	int levels;
+	int clo;
+	int bkcl;
+	char *levelname[4]={"Eazy","Normal","Hard  ","Nightmare"};
+	char move;
+
+	levels=1;
+	credit=0;
+	clo=0;
+	loop=0;
+	nins nin;
+	nemo nem[nemomax];
+	nin.x=22; // 플레이어 스폰 x좌표
+	nin.y=wally-2; // 플레이어 스폰 y좌표
+	showmain();
+	tx=getch();
+
+	if (tx==49)	{
+		system("cls");
+		bkcl=clock();
+		loop=1;
+	}
+	else if (tx==50){
+			system("cls");
+			credit=1;
+		}
+
+	else
+		exit(0);
+
+	while (credit)	{
+		showcredit();
+	loa=getch();
+
+	if (loa){
+		system("cls");
+		credit=0;
+		showmain();
+		tx=getch();
+		if (tx==49){
+			system("cls");
+			bkcl=clock();
+			loop=1;
+		}
+		else if (tx==50){
+			system("cls");
+
+			credit=1;
+		}
+		else
+			exit(0);
+		}
+	}
+
+	if (loop==1){
+
+	for (i=0;i<wally;++i)
+
+	{
+
+	gotoxy(wallx,i);
+
+	printf("▩");
+
+	}
+
+	for (i=0;i<wally;++i)
+
+	{
+
+	gotoxy(wall2x,i);
+
+	printf("▩");
+
+	}
+
+	  gotoxy(wallx, wally-1);
+
+	for(i = 0; i < wall3x; ++i)
+
+	{
+
+	 printf("▩");
+
+	}
+
+
+	for (i=0;i<nemomax;++i) //네모탄생
+
+	{
+
+	nemo_spawnpos(&nem[i]);
+
+	nemo_speed(&nem[i],levels*3);
+
+	nem[i].bkspeed=nem[i].speed;
+
+	gotoxy(nem[i].x,nem[i].y);
+
+	printf("■");
+
+	}
+
+	}
+
+	  while (loop) // 게임시작후
+
+	  {
+
+	 clo=(clock()-bkcl)/10;
+
+
+
+	 if (clo>=lv2){
+
+	 levels=2;
+	 }
+
+	 if (clo>=lv3){
+
+	 levels=3;
+
+	}
+
+	 if (clo>=lv4){
+
+	 levels=4;
+
+	 }
+
+	 gotoxy(2,24);
+
+	 printf("Score : %d - Level : %s",clo,levelname[levels-1]); // 스코어
+
+
+	 for (i=0;i<nemomax;++i) // 네모가 플레이어잡을때
+
+	 {
+
+	 if (nem[i].y==nin.y && nem[i].x==nin.x)
+
+	 {
+
+	 loop=0;
+
+	 gotoxy(18,8);
+
+	 printf("Game Over \n");
+
+	 gotoxy(10,10);
+
+	 printf("Your ass was broken by Nemo \n");
+
+	     gotoxy(10,12);
+
+	  printf("점수 : %d  - 레벨 : %s \n",clo,levelname[levels-1]);
+
+	     getch();
+
+	     system("pause");
+
+	 }
+
+	 }
+	 gotoxy(nin.x,nin.y);
+
+	 printf("♀");
+	 sleep(45);
+
+	 for (i=0;i<nemomax;i++) // 네모 이동
+
+	 {
+
+	 if (nem[i].speed>0)
+
+	 nem[i].speed-=1;
+
+	 else
+
+	 {
+
+	 if (nem[i].y<wally-2)
+	 {
+	 gotoxy(nem[i].x,nem[i].y);
+	 printf(" ");
+	 nem[i].y+=1;
+	 gotoxy(nem[i].x,nem[i].y);
+	 printf("■");
+	 }
+
+	 else
+	 {
+	 gotoxy(nem[i].x,nem[i].y);
+	 printf(" ");
+	 nemo_spawnpos(&nem[i]);
+	 nemo_speed(&nem[i],levels*2);
+	 nem[i].bkspeed=nem[i].speed;
+	 gotoxy(nem[i].x,nem[i].y);}
+
+	 }
+
+	 }
+
+	 if (linux_kbhit())
+
+	 {
+
+	 gotoxy(nin.x,nin.y);
+
+	 move=getch();
+
+	 printf(" ");
+
+
+
+	 switch(move)
+
+	 {
+
+	 case 75:
+
+	 nin.x-=2;
+
+	 if (nin.x<wallx+2)
+
+	 nin.x=wallx+2;
+
+	 break;
+
+	 case 77:
+
+	 nin.x+=2;
+
+	 if (nin.x>wall2x-2)
+
+	 nin.x=wall2x-2;
+
+	 break;
+
+	 }
+
+	 }
+
+	  }
+
+	}
