@@ -78,7 +78,7 @@ void showmain()
 void showcredit() // 매인메뉴 - 2
 {
 	gotoxy(17,12);
-	printf("제작 : I조, 김훈민, 표동우, 한태 \n");
+	printf("제작 : I조, 김훈민, 표동우, 한태환 \n");
 	gotoxy(12,14);
 	printf("아무키 클릭시 게임메뉴로 \n");
 }
@@ -340,6 +340,5 @@ int main() //메인
 
 	 }
 
-	  }
-
-	}
+ }
+}
