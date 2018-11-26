@@ -62,7 +62,7 @@ int main(){
 
 	dos_size(); //게임창사이즈 함수
 	srand(time(NULL)); // 랜덤함수
-	system("title 네모 피하기 Ver4 by Spore");  // 게임 타이틀 이름
+	system("title 네모 피하기 조별과제");  // 게임 타이틀 이름
 
 	nins nin; // 플레이어 구조체 
 	nemo nem[nemomax]; // 네모 구조체 
