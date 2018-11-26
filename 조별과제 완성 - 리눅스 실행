@@ -1,4 +1,7 @@
-// 예시 1 완성버젼. 코드 일부 수정, 윈도우 실행
+// 예시 1 완성버젼. 리눅스 실행.
+// sh : 1 : mode : not found 오류 발생시 해결방법 모름.
+// 헤더파일 따로 추가할 것.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
