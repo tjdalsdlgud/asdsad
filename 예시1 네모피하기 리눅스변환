@@ -1,3 +1,6 @@
+// window.h 는 리눅스에서 사용X
+// unistd.h, termios.h  로 대체, 코드 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
